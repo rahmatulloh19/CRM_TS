@@ -73,4 +73,5 @@ img {
 .main_layout {
   display: grid;
   grid-template-columns: 1fr 5fr;
+  background-color: #F0F2FA;
 }
