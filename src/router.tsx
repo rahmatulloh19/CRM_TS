@@ -13,19 +13,19 @@ const router = createBrowserRouter([
       },
       {
         element: <h1>students</h1>,
-        path: "/students",
+        path: "/students/*",
       },
       {
         element: <h1>groups</h1>,
-        path: "/groups",
+        path: "/groups/*",
       },
       {
         element: <h1>teachers</h1>,
-        path: "/teachers",
+        path: "/teachers/*",
       },
       {
         element: <h1>subjects</h1>,
-        path: "/subjects",
+        path: "/subjects/*",
       },
     ],
   },
