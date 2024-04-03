@@ -1,3 +1,76 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Variables */
+
+:root {
+  --main-ff: ""
+  --main-fw: 00;
+  --global-fw: 00;
+  --main-fz: px;
+  --main-text-color: #;
+  --secondary-text-color: #;
+  --main-bg-color: #;
+  --secondary-bg-color: #;
+  --mixin: #;
+}
+
+/* Font families */
+
+@font-face {
+  font-family: "";
+  font-weight: 00;
+  font-display: swap;
+  src: url("../fonts/") format("woff2"),
+       url("../fonts/") format("woff")
+}
+
+/* Mobile first */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+img {
+  display: block;
+  height: auto;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+/* Sitcky footer */
+
+.site-main {
+  flex-grow: 1;
+}
+
+.main_layout {
+  display: grid;
+  grid-template-columns: 1fr 5fr;
+}
