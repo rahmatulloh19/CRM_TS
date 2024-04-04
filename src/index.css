@@ -56,3 +56,14 @@ img {
   grid-template-columns: 1fr 5fr;
   background-color: #f0f2fa;
 }
+
+@layer {
+  .student-table {
+    display: grid;
+    grid-template-columns: 70px repeat(4, minmax(0, 1fr)) 300px;
+  }
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: red;
+}
