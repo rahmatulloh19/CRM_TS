@@ -8,12 +8,7 @@ export const StudentsValidation = z.object({
   last_name_student: z.string().min(2).max(50).trim(),
   parent_name_student: z.string().min(2).max(50).trim(),
   parent_number_student: z.string().regex(phoneRegex, "Invalid Number!").trim(),
-  group: z
-    .string({
-      required_error: "Group required !",
-    })
-    .min(1)
-    .trim(),
+  group: z.string().min(1).trim(),
   age_student: z
     .string()
     .min(1)
@@ -24,4 +19,12 @@ export const StudentsValidation = z.object({
 
       return false;
     }),
+});
+export const GroupsValidation = z.object({
+  type_group: z.string().min(2).max(50).trim(),
+  day_lessons: z.string().min(1),
+  starting_time: z.string().min(1),
+  teacher: z.string().min(2),
+  finishing_time: z.string().min(1).trim(),
+  name_group: z.string().min(1).trim(),
 });
