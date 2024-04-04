@@ -1,5 +1,11 @@
+import { Caption } from "@/components/shared";
+
 const Teachers = () => {
-  return <div>Teachers</div>;
+  return (
+    <div>
+      <Caption>O'qtuvchilar</Caption>
+    </div>
+  );
 };
 
 export default Teachers;

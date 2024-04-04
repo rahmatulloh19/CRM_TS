@@ -4,27 +4,7 @@
 
 /* Variables */
 
-:root {
-  --main-ff: ""
-  --main-fw: 00;
-  --global-fw: 00;
-  --main-fz: px;
-  --main-text-color: #;
-  --secondary-text-color: #;
-  --main-bg-color: #;
-  --secondary-bg-color: #;
-  --mixin: #;
-}
-
-/* Font families */
-
-@font-face {
-  font-family: "";
-  font-weight: 00;
-  font-display: swap;
-  src: url("../fonts/") format("woff2"),
-       url("../fonts/") format("woff")
-}
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
 
 /* Mobile first */
 
@@ -40,6 +20,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  font-family: "Inter", sans-serif;
 }
 
 #root {
@@ -73,5 +54,5 @@ img {
 .main_layout {
   display: grid;
   grid-template-columns: 1fr 5fr;
-  background-color: #F0F2FA;
+  background-color: #f0f2fa;
 }
