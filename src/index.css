@@ -64,6 +64,13 @@ img {
   }
 }
 
+@layer {
+  .teachers-table {
+    display: grid;
+    grid-template-columns: 70px repeat(4, minmax(200px, 1fr));
+  }
+}
+
 ::-webkit-scrollbar-thumb {
   background-color: red;
 }

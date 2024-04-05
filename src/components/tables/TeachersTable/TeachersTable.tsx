@@ -5,6 +5,7 @@ import { teachersColumn as columns } from "./columns";
 import { ITeacherTable } from "@/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from "@/components/ui/pagination";
+import DialogComponent from "@/components/shared/DialogComponent";
 
 const TeachersTable = () => {
   const [data, setData] = useState<ITeacherTable[]>(() => [...MOCKDATA]);
@@ -35,7 +36,7 @@ const TeachersTable = () => {
       <Table className="block">
         <TableHeader className="block sticky top-0 bg-[#2F49D1] scrollbar-thumb-rounded scrollbar-track-rounded-full">
           {table.getHeaderGroups().map((headerCol) => (
-            <TableRow className="student-table items-center justify-between hover:bg-[#2F49D1]" key={headerCol.id}>
+            <TableRow className="teachers-table items-center justify-between hover:bg-[#2F49D1]" key={headerCol.id}>
               {headerCol.headers.map((header) => (
                 <TableHead className={`flex items-center text-white`} key={header.id}>
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
@@ -46,14 +47,43 @@ const TeachersTable = () => {
         </TableHeader>
         <TableBody className="block max-h-[500px] overflow-y-scroll scrollbar scrollbar-thumb-[#323232] scrollbar-track-[#C4C4C4]">
           {table.getRowModel().rows.map((row) => (
-            <TableRow className="student-table even:hover:bg-[#001daf08] odd:hover:bg-[#001daf3b] odd:bg-[#001CAF1A]" key={row.id}>
+            <TableRow className="teachers-table even:hover:bg-[#001daf08] odd:hover:bg-[#001daf3b] odd:bg-[#001CAF1A]" key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                <TableCell className={`${Number(cell.getValue()) ? "flex justify-between" : ""}`} key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  {Number(cell.getValue()) ? (
+                    <div className="flex gap-5">
+                      <DialogComponent
+                        trigger={
+                          <button type="button">
+                            <img src="/assets/icons/edit.svg" width={20} height={20} alt="Pen's icon" />
+                          </button>
+                        }
+                      >
+                        <h1>Hi I'm Dialog</h1>
+                      </DialogComponent>
+
+                      <DialogComponent
+                        trigger={
+                          <button type="button">
+                            <img src="/assets/icons/garbage.svg" width={20} height={20} alt="Pen's icon" />
+                          </button>
+                        }
+                      >
+                        <h1>Hi I'm Delete Dialog</h1>
+                      </DialogComponent>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </TableCell>
               ))}
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* Pagination */}
       <div className="flex justify-end items-center mt-20">
         <strong>Jami: {table.getPageCount()} ta</strong>
         <Pagination className="mx-0 inline-block w-auto ml-16 select-none">

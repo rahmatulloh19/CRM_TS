@@ -5,6 +5,7 @@ import { studentsColumns as columns } from "./columns";
 import { IStudentTable } from "@/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from "@/components/ui/pagination";
+import DialogComponent from "@/components/shared/DialogComponent";
 
 const StudentsTable = () => {
   const [data, setData] = useState<IStudentTable[]>(() => [...MOCKDATA]);
@@ -48,12 +49,41 @@ const StudentsTable = () => {
           {table.getRowModel().rows.map((row) => (
             <TableRow className="student-table even:hover:bg-[#001daf08] odd:hover:bg-[#001daf3b] odd:bg-[#001CAF1A]" key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                <TableCell className={`${cell.id.includes("parent_number") ? "flex justify-between" : ""}`} key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  {cell.id.includes("parent_number") ? (
+                    <div className="flex gap-5">
+                      <DialogComponent
+                        trigger={
+                          <button type="button">
+                            <img src="/assets/icons/edit.svg" width={20} height={20} alt="Pen's icon" />
+                          </button>
+                        }
+                      >
+                        <h1>Hi I'm Dialog</h1>
+                      </DialogComponent>
+
+                      <DialogComponent
+                        trigger={
+                          <button type="button">
+                            <img src="/assets/icons/garbage.svg" width={20} height={20} alt="Pen's icon" />
+                          </button>
+                        }
+                      >
+                        <h1>Hi I'm Delete Dialog</h1>
+                      </DialogComponent>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </TableCell>
               ))}
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* Pagination */}
       <div className="flex justify-end items-center mt-20">
         <strong>Jami: {table.getPageCount()} ta</strong>
         <Pagination className="mx-0 inline-block w-auto ml-16 select-none">
