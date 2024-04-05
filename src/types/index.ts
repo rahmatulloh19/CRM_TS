@@ -20,3 +20,8 @@ export type ITeacherTable = {
   direction: string;
   age: number;
 };
+
+export type ISubjectTable = {
+  id: number;
+  name: string;
+};

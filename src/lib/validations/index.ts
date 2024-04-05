@@ -56,3 +56,7 @@ export const TeachersValidation = z.object({
     .refine((files) => ACCEPTED_IMAGE_MIME_TYPES.includes(files?.type), "Only .jpg, .jpeg, .png and .webp formats are supported."),
   last_name_teacher: z.string().min(2).max(50),
 });
+
+export const SubjectValidation = z.object({
+  name_subject: z.string().min(2).max(50).trim(),
+});
