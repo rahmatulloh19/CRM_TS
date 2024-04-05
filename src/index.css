@@ -71,6 +71,10 @@ img {
   }
 }
 
+.search_input {
+  background-position: left 16px center;
+}
+
 ::-webkit-scrollbar-thumb {
   background-color: red;
 }

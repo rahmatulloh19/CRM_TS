@@ -1,14 +1,16 @@
 import { useState } from "react";
 import MOCKDATA from "./MOCK_DATA (1).json";
-import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, PaginationState } from "@tanstack/react-table";
+import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, PaginationState, getFilteredRowModel } from "@tanstack/react-table";
 import { studentsColumns as columns } from "./columns";
 import { IStudentTable } from "@/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from "@/components/ui/pagination";
 import DialogComponent from "@/components/shared/DialogComponent";
+import { Input } from "@/components/ui/input";
 
 const StudentsTable = () => {
   const [data, setData] = useState<IStudentTable[]>(() => [...MOCKDATA]);
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -23,15 +25,24 @@ const StudentsTable = () => {
     onPaginationChange: setPagination,
     state: {
       pagination,
+      globalFilter,
     },
+    onGlobalFilterChange: setGlobalFilter,
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
   setData;
 
   return (
     <div className="mt-12 mb-16 px-11">
-      <div className="flex pl-10 pr-11 mb-8">
+      <div className="flex justify-between items-center pl-10 pr-11 mb-8">
         <h3 className="text-[40px] leading-[48px] font-semibold text-[#0061F7]">Bizning o’quvchilar</h3>
+        <Input
+          className="max-w-[340px] bg-no-repeat search_input rounded-2xl bg-[url('/assets/icons/search.svg')] pl-12 focus-visible:ring-[#2F49D199]"
+          onChange={(evt) => {
+            setGlobalFilter(evt.target.value.trim());
+          }}
+        />
       </div>
       <Table className="block">
         <TableHeader className="block sticky top-0 bg-[#2F49D1] scrollbar-thumb-rounded scrollbar-track-rounded-full">

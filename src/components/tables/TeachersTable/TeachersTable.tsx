@@ -1,13 +1,15 @@
 import { useState } from "react";
 import MOCKDATA from "./MOCK_DATA (1).json";
-import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, PaginationState } from "@tanstack/react-table";
+import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, PaginationState, getFilteredRowModel } from "@tanstack/react-table";
 import { teachersColumn as columns } from "./columns";
 import { ITeacherTable } from "@/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from "@/components/ui/pagination";
 import DialogComponent from "@/components/shared/DialogComponent";
+import { Input } from "@/components/ui/input";
 
 const TeachersTable = () => {
+  const [globalFilter, setGlobalFilter] = useState("");
   const [data, setData] = useState<ITeacherTable[]>(() => [...MOCKDATA]);
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -23,15 +25,24 @@ const TeachersTable = () => {
     onPaginationChange: setPagination,
     state: {
       pagination,
+      globalFilter,
     },
+    onGlobalFilterChange: setGlobalFilter,
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
   setData;
 
   return (
     <div className="mt-12 mb-16 px-11">
-      <div className="flex pl-10 pr-11 mb-8">
+      <div className="flex justify-between items-center pl-10 pr-11 mb-8">
         <h3 className="text-[40px] leading-[48px] font-semibold text-[#0061F7]">Bizning o’qtuvchilar</h3>
+        <Input
+          className="max-w-[340px] bg-no-repeat search_input rounded-2xl bg-[url('/assets/icons/search.svg')] pl-12 focus-visible:ring-[#2F49D199]"
+          onChange={(evt) => {
+            setGlobalFilter(evt.target.value.trim());
+          }}
+        />
       </div>
       <Table className="block">
         <TableHeader className="block sticky top-0 bg-[#2F49D1] scrollbar-thumb-rounded scrollbar-track-rounded-full">
@@ -49,9 +60,9 @@ const TeachersTable = () => {
           {table.getRowModel().rows.map((row) => (
             <TableRow className="teachers-table even:hover:bg-[#001daf08] odd:hover:bg-[#001daf3b] odd:bg-[#001CAF1A]" key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <TableCell className={`${Number(cell.getValue()) ? "flex justify-between" : ""}`} key={cell.id}>
+                <TableCell className={`${cell.id.includes("age") ? "flex justify-between" : ""}`} key={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  {Number(cell.getValue()) ? (
+                  {cell.id.includes("age") ? (
                     <div className="flex gap-5">
                       <DialogComponent
                         trigger={
