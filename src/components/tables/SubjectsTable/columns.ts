@@ -7,7 +7,7 @@ export const subjectsColumn = [
   columnHelper.accessor("id", {
     header: "№",
   }),
-  columnHelper.accessor("name", {
+  columnHelper.accessor("subject_name", {
     header: "Fan nomi",
   }),
 ];

@@ -23,5 +23,5 @@ export type ITeacherTable = {
 
 export type ISubjectTable = {
   id: number;
-  name: string;
+  subject_name: string;
 };

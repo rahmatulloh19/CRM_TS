@@ -1,10 +1,16 @@
 import { createBrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
 import App from "./App";
 import { Groups, Home, Students, Subjects, Teachers } from "./pages";
+import store from "./store/store";
 
 const router = createBrowserRouter([
   {
-    element: <App />,
+    element: (
+      <Provider store={store}>
+        <App />
+      </Provider>
+    ),
     path: "/",
     children: [
       {

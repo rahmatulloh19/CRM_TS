@@ -58,5 +58,5 @@ export const TeachersValidation = z.object({
 });
 
 export const SubjectValidation = z.object({
-  name_subject: z.string().min(2).max(50).trim(),
+  subject_name: z.string().min(2).max(50).trim(),
 });

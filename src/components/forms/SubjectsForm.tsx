@@ -5,17 +5,30 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { SubjectValidation } from "@/lib/validations";
+import { useAddSubjectMutation } from "@/lib/queries";
 
 const SubjectsForm = () => {
+  const [addSubject, result] = useAddSubjectMutation({});
+
   const form = useForm<z.infer<typeof SubjectValidation>>({
     resolver: zodResolver(SubjectValidation),
     defaultValues: {
-      name_subject: "",
+      subject_name: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof SubjectValidation>) {
-    console.log(values);
+  const postSubject = async (values: { subject_name: string }) => {
+    try {
+      await addSubject(values).unwrap();
+      result.reset();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  async function onSubmit(values: z.infer<typeof SubjectValidation>) {
+    postSubject(values);
+    console.log(result.isLoading);
   }
   return (
     <Form {...form}>
@@ -23,7 +36,7 @@ const SubjectsForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-wrap gap-8 justify-between items-end content-end">
         <FormField
           control={form.control}
-          name="name_subject"
+          name="subject_name"
           render={({ field }) => (
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">Fan nomi</FormLabel>
