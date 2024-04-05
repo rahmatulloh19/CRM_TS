@@ -1,13 +1,13 @@
 import { useState } from "react";
 import MOCKDATA from "./MOCK_DATA (1).json";
 import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, PaginationState } from "@tanstack/react-table";
-import { studentsColumns as columns } from "./columns";
-import { IStudentTable } from "@/types";
+import { teachersColumn as columns } from "./columns";
+import { ITeacherTable } from "@/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from "@/components/ui/pagination";
 
-const StudentsTable = () => {
-  const [data, setData] = useState<IStudentTable[]>(() => [...MOCKDATA]);
+const TeachersTable = () => {
+  const [data, setData] = useState<ITeacherTable[]>(() => [...MOCKDATA]);
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -30,7 +30,7 @@ const StudentsTable = () => {
   return (
     <div className="mt-12 mb-16 px-11">
       <div className="flex pl-10 pr-11 mb-8">
-        <h3 className="text-[40px] leading-[48px] font-semibold text-[#0061F7]">Bizning o’quvchilar</h3>
+        <h3 className="text-[40px] leading-[48px] font-semibold text-[#0061F7]">Bizning o’qtuvchilar</h3>
       </div>
       <Table className="block">
         <TableHeader className="block sticky top-0 bg-[#2F49D1] scrollbar-thumb-rounded scrollbar-track-rounded-full">
@@ -135,4 +135,4 @@ const MorePage = ({ pageIndex, countOfTable, position, goToPage }: { pageIndex: 
   }
 };
 
-export default StudentsTable;
+export default TeachersTable;

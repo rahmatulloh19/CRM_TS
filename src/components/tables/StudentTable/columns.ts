@@ -3,7 +3,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 
 const columnHelper = createColumnHelper<IStudentTable>();
 
-export const columns = [
+export const studentsColumns = [
   columnHelper.accessor("id", {
     header: "№",
   }),

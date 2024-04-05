@@ -12,3 +12,11 @@ export type IStudentTable = {
   parent_full_name: string;
   parent_number: string;
 };
+
+export type ITeacherTable = {
+  id: number;
+  full_name: string;
+  number: string;
+  direction: string;
+  age: number;
+};
