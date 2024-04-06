@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, PaginationState, getFilteredRowModel } from "@tanstack/react-table";
 import { subjectsColumn as columns } from "./columns";
 import { ISubjectTable } from "@/types";
@@ -6,13 +6,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from "@/components/ui/pagination";
 import DialogComponent from "@/components/shared/DialogComponent";
 import { Input } from "@/components/ui/input";
-import { useGetSubjectsQuery } from "@/lib/queries";
+import { useEditSubjectMutation, useGetSubjectsQuery, useRemoveSubjectMutation } from "@/lib/queries";
+import { Button } from "@/components/ui/button";
 
 const SubjectsTable = () => {
   const { data: fetchedData, isLoading } = useGetSubjectsQuery(undefined);
 
   const [globalFilter, setGlobalFilter] = useState("");
   const [data, setData] = useState<ISubjectTable[]>([]);
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -32,6 +35,21 @@ const SubjectsTable = () => {
     onGlobalFilterChange: setGlobalFilter,
     getFilteredRowModel: getFilteredRowModel(),
   });
+
+  const [editSubject, resultEdit] = useEditSubjectMutation();
+
+  const onSubmit = async (evt: FormEvent, id: number) => {
+    evt.preventDefault();
+    editSubject({ id, subject_name: inputRef.current?.value });
+    console.log(resultEdit);
+  };
+
+  const [removeSubject] = useRemoveSubjectMutation();
+
+  const handleDelete = async (evt: FormEvent, id: number) => {
+    evt.preventDefault();
+    await removeSubject(id);
+  };
 
   useEffect(() => {
     fetchedData?.data ? setData(fetchedData.data) : "";
@@ -82,7 +100,24 @@ const SubjectsTable = () => {
                             </button>
                           }
                         >
-                          <h1>Hi I'm Dialog</h1>
+                          <div>
+                            <h4 className="my-4 text-2xl font-bold text-orange-600">Tahrirlash</h4>
+                            <p className="text-neutral-500 mb-6">
+                              <strong className="text-black font-semibold">{row.original.subject_name}</strong> fanning ma'lumotlari
+                            </p>
+                            <form onSubmit={(evt) => onSubmit(evt, row.original.id)} className="flex flex-wrap gap-8 justify-end">
+                              <input
+                                className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus-visible:ring-slate-300 focus-visible:ring-[#2F49D199]"
+                                type="text"
+                                name="subject_name"
+                                defaultValue={row.original.subject_name}
+                                ref={inputRef}
+                              />
+                              <Button className="bg-orange-600 ml-auto hover:bg-orange-700 transition" type="submit">
+                                Tahrirlash
+                              </Button>
+                            </form>
+                          </div>
                         </DialogComponent>
 
                         <DialogComponent
@@ -92,7 +127,17 @@ const SubjectsTable = () => {
                             </button>
                           }
                         >
-                          <h1>Hi I'm Delete Dialog</h1>
+                          <div>
+                            <h4 className="mt-4 mb-8 text-xl font-bold text-red-600">O'chirish</h4>
+                            <p className="text-neutral-500 mb-5">
+                              <strong className="text-black font-semibold">{row.original.subject_name}</strong> fanlar ro'yxatidan o'chirishni istaysizmi ?
+                            </p>
+                            <form className="flex justify-end" onSubmit={(evt) => handleDelete(evt, row.original.id)}>
+                              <Button className="bg-red-500 hover:bg-red-600 transition" type="submit">
+                                O'chirish
+                              </Button>
+                            </form>
+                          </div>
                         </DialogComponent>
                       </div>
                     ) : (

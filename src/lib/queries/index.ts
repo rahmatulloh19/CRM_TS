@@ -21,6 +21,21 @@ export const api = createApi({
       }),
       invalidatesTags: ["Subject"],
     }),
+    editSubject: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/subject/update/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Subject", "Group", "Teacher"],
+    }),
+    removeSubject: builder.mutation({
+      query: (id) => ({
+        url: `/subject/delete/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Subject", "Group", "Teacher"],
+    }),
     getGroups: builder.query({
       query: () => `/all-group`,
       providesTags: (result) => (result ? [...result.data.map(({ id }: { id: number }) => ({ type: "Group" as const, id })), "Group"] : ["Group"]),
@@ -97,6 +112,8 @@ export const {
   useAddSubjectMutation,
   useGetSubjectsQuery,
   useAddGroupMutation,
+  useEditSubjectMutation,
+  useRemoveSubjectMutation,
   useGetGroupsQuery,
   useAddTeachersMutation,
   useEditTeacherMutation,
