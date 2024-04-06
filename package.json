@@ -20,6 +20,7 @@
     "@reduxjs/toolkit": "^2.2.3",
     "@tanstack/match-sorter-utils": "^8.15.1",
     "@tanstack/react-table": "^8.15.3",
+    "axios": "^1.6.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "lucide-react": "^0.364.0",

@@ -40,18 +40,9 @@ export const GroupsValidation = z.object({
 
 export const TeachersValidation = z.object({
   first_name: z.string().min(2).max(50).trim(),
-  phone_number: z.number().min(7).max(11),
+  phone_number: z.number().min(1),
   subject_id: z.number().min(1),
-  age: z
-    .number()
-    .min(1)
-    .refine((value) => {
-      if (+value >= 8 && +value <= 28) {
-        return true;
-      }
-
-      return false;
-    }),
+  age: z.number().min(8).max(28),
   img: z.unknown(),
   last_name: z.string().min(2).max(50),
 });

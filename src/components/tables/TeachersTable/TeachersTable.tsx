@@ -1,3 +1,4 @@
+import axios from "axios";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, PaginationState, getFilteredRowModel } from "@tanstack/react-table";
 import { teachersColumn as columns } from "./columns";
@@ -6,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from "@/components/ui/pagination";
 import DialogComponent from "@/components/shared/DialogComponent";
 import { Input } from "@/components/ui/input";
-import { useEditTeacherMutation, useGetTeachersQuery, useRemoveTeacherMutation } from "@/lib/queries";
+import { BASE_URL, useEditTeacherMutation, useGetTeachersQuery, useRemoveTeacherMutation } from "@/lib/queries";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -67,6 +68,9 @@ const TeachersTable = () => {
     evt.preventDefault();
     console.log(result);
     await removeTeacher(id);
+    axios.delete(`${BASE_URL}/delete/${id}`).then((res) => {
+      console.log(res);
+    });
   };
 
   useEffect(() => {
@@ -218,7 +222,7 @@ const TeachersTable = () => {
                         >
                           <div>
                             <h4 className="mt-4 mb-8 text-xl font-bold text-red-600">O'chirish</h4>
-                            <p className="text-neutral-500">
+                            <p className="text-neutral-500 mb-6">
                               <strong className="text-black font-semibold">{row.original.full_name}</strong> o'qtuvchilar ro'yxatidan o'chirishni istaysizmi ?
                             </p>
                             <form className="flex justify-end" onSubmit={(evt) => handleDeleteStudent(evt, row.original.id)}>

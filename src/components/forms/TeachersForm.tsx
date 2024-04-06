@@ -31,10 +31,11 @@ const TeachersForm = () => {
     const formData = new FormData();
     for (const key in values) {
       formData.append(key, values[key]);
-      console.log(key, values[key]);
     }
     postTeacher(formData);
   }
+
+  console.log(form.formState.errors);
   return (
     <Form {...form}>
       <h2 className="leading-[48px] font-semibold mb-8 text-[40px] tracking-[2px] text-[#0061F7]">Yangi o’qtuvchi qo’shish</h2>
@@ -58,7 +59,7 @@ const TeachersForm = () => {
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">Telefon raqam</FormLabel>
               <FormControl>
-                <Input type="number" className="focus-visible:ring-[#2F49D199]" placeholder="Telefon raqam ..." {...field} />
+                <Input type="number" className="focus-visible:ring-[#2F49D199]" placeholder="Telefon raqam ..." {...field} onChange={(evt) => field.onChange(+evt.target.value)} />
               </FormControl>
             </FormItem>
           )}
@@ -69,7 +70,11 @@ const TeachersForm = () => {
           render={({ field }) => (
             <FormItem className="w-[320px] focus-visible:ring-[#2F49D199]">
               <FormLabel className="text-xl tracking-wide font-semibold">Yo’nalish</FormLabel>
-              <Select onValueChange={field.onChange}>
+              <Select
+                onValueChange={(evt) => {
+                  field.onChange(+evt);
+                }}
+              >
                 <FormControl>
                   <SelectTrigger className="focus-visible:ring-[#2F49D199]">
                     <SelectValue placeholder="Yo’nalish ..." />
@@ -93,7 +98,7 @@ const TeachersForm = () => {
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">Yoshi</FormLabel>
               <FormControl>
-                <Input type="number" className="focus-visible:ring-[#2F49D199]" placeholder="Yoshi ..." {...field} />
+                <Input type="number" className="focus-visible:ring-[#2F49D199]" placeholder="Yoshi ..." {...field} onChange={(evt) => field.onChange(+evt.target.value)} />
               </FormControl>
             </FormItem>
           )}
