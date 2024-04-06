@@ -40,7 +40,7 @@ const StudentsTable = () => {
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  const [editStudent, result] = useEditStudentMutation();
+  const [editStudent] = useEditStudentMutation();
 
   const updateStudent = async (student: IUpdateStudent) => {
     try {
@@ -57,7 +57,6 @@ const StudentsTable = () => {
 
   function onSubmit(values: z.infer<typeof StudentsUpdateValidation>) {
     updateStudent(values);
-    console.log(result);
   }
 
   const [deleteStudent] = useRemoveStudentMutation();

@@ -40,10 +40,10 @@ export const GroupsValidation = z.object({
 
 export const TeachersValidation = z.object({
   first_name: z.string().min(2).max(50).trim(),
-  phone_number: z.string().regex(PHONE_REGEXP, "Invalid Number!"),
-  subject_id: z.string().min(1).trim(),
+  phone_number: z.number().min(7).max(11),
+  subject_id: z.number().min(1),
   age: z
-    .string()
+    .number()
     .min(1)
     .refine((value) => {
       if (+value >= 8 && +value <= 28) {
@@ -52,8 +52,15 @@ export const TeachersValidation = z.object({
 
       return false;
     }),
-  img: z.any(),
+  img: z.unknown(),
   last_name: z.string().min(2).max(50),
+});
+
+export const TeacherUpdateValidation = z.object({
+  id: z.number().min(1),
+  first_name: z.string().min(2).max(50),
+  age: z.number().min(1),
+  img: z.unknown(),
 });
 
 export const SubjectValidation = z.object({

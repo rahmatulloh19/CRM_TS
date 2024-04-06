@@ -1,19 +1,24 @@
-import { useEffect, useState } from "react";
-import MOCKDATA from "./MOCK_DATA (1).json";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, PaginationState, getFilteredRowModel } from "@tanstack/react-table";
 import { teachersColumn as columns } from "./columns";
-import { ITeacher, ITeacherTable } from "@/types";
+import { ITeacher, ITeacherTable, IUpdateTeacher } from "@/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from "@/components/ui/pagination";
 import DialogComponent from "@/components/shared/DialogComponent";
 import { Input } from "@/components/ui/input";
-import { useGetTeachersQuery } from "@/lib/queries";
+import { useEditTeacherMutation, useGetTeachersQuery, useRemoveTeacherMutation } from "@/lib/queries";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { TeacherUpdateValidation } from "@/lib/validations";
 
 const TeachersTable = () => {
   const { data: fetchedData, isLoading } = useGetTeachersQuery(undefined);
 
   const [globalFilter, setGlobalFilter] = useState("");
-  const [data, setData] = useState<ITeacherTable[]>(() => [...MOCKDATA]);
+  const [data, setData] = useState<ITeacherTable[]>(() => []);
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -33,6 +38,36 @@ const TeachersTable = () => {
     onGlobalFilterChange: setGlobalFilter,
     getFilteredRowModel: getFilteredRowModel(),
   });
+
+  const form = useForm<z.infer<typeof TeacherUpdateValidation>>({
+    resolver: zodResolver(TeacherUpdateValidation),
+    mode: "all",
+  });
+
+  const [editTeacher] = useEditTeacherMutation();
+  const [removeTeacher, result] = useRemoveTeacherMutation();
+
+  const updateTeacher = async (values: IUpdateTeacher) => {
+    try {
+      await editTeacher(values).unwrap();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  function onSubmit(values: z.infer<typeof TeacherUpdateValidation>) {
+    updateTeacher(values);
+  }
+
+  // const deleteTeacher = async (id: number) => {
+  //   await removeTeacher(id).unwrap();
+  // };
+
+  const handleDeleteStudent = async (evt: FormEvent, id: number) => {
+    evt.preventDefault();
+    console.log(result);
+    await removeTeacher(id);
+  };
 
   useEffect(() => {
     fetchedData
@@ -92,12 +127,86 @@ const TeachersTable = () => {
                       <div className="flex gap-5">
                         <DialogComponent
                           trigger={
-                            <button type="button">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                form.setValue("first_name", row.original.full_name.split(" ").slice(0, 1).join());
+                                form.setValue("age", row.original.age ? +row.original.age : 0);
+                                form.setValue("id", +row.original.id);
+                              }}
+                            >
                               <img src="/assets/icons/edit.svg" width={20} height={20} alt="Pen's icon" />
                             </button>
                           }
                         >
-                          <h1>Hi I'm Dialog</h1>
+                          <div>
+                            <h4 className="my-4 text-2xl font-bold text-orange-600">Tahrirlash</h4>
+                            <p className="text-neutral-500 mb-6">
+                              <strong className="text-black font-semibold">{row.original.full_name}</strong> o'quvchi ma'lumotlari
+                            </p>
+                            <Form {...form}>
+                              <form onSubmit={form.handleSubmit((values) => onSubmit(values))} className="flex flex-wrap gap-8 justify-between items-end content-end">
+                                <FormField
+                                  control={form.control}
+                                  name="first_name"
+                                  render={({ field }) => (
+                                    <FormItem className="w-[320px]">
+                                      <FormLabel className="text-lg tracking-wide font-semibold">O’quvchi ismi</FormLabel>
+                                      <FormControl>
+                                        <Input className="focus-visible:ring-[#2F49D199]" type="text" placeholder="O’quvchi ismi ..." {...field} />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="age"
+                                  render={({ field }) => (
+                                    <FormItem className="w-[320px]">
+                                      <FormLabel className="text-lg tracking-wide font-semibold">O’quvchi yoshi</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          type="number"
+                                          className="focus-visible:ring-[#2F49D199]"
+                                          placeholder="O’quvchi yoshi ..."
+                                          {...field}
+                                          onChange={(evt) => {
+                                            field.onChange(evt.target.value ? +evt.target.value : "");
+                                          }}
+                                        />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="img"
+                                  render={({ field: { value, onChange, ...fieldProps } }) => (
+                                    <FormItem className="w-[320px]">
+                                      <FormLabel className="text-xl tracking-wide font-semibold">Rasm 3x4</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          type="file"
+                                          className="focus-visible:ring-[#2F49D199]"
+                                          placeholder="Rasm 3x4 ..."
+                                          onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+                                            if (evt.target.files) {
+                                              value;
+                                              onChange(evt.target.files[0]);
+                                            }
+                                          }}
+                                          {...fieldProps}
+                                        />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                                <Button className="bg-orange-600 ml-auto hover:bg-orange-700 transition" type="submit" disabled={Boolean(Object.keys(form.formState.errors).length)}>
+                                  Tahrirlash
+                                </Button>
+                              </form>
+                            </Form>
+                          </div>
                         </DialogComponent>
 
                         <DialogComponent
@@ -107,7 +216,17 @@ const TeachersTable = () => {
                             </button>
                           }
                         >
-                          <h1>Hi I'm Delete Dialog</h1>
+                          <div>
+                            <h4 className="mt-4 mb-8 text-xl font-bold text-red-600">O'chirish</h4>
+                            <p className="text-neutral-500">
+                              <strong className="text-black font-semibold">{row.original.full_name}</strong> o'qtuvchilar ro'yxatidan o'chirishni istaysizmi ?
+                            </p>
+                            <form className="flex justify-end" onSubmit={(evt) => handleDeleteStudent(evt, row.original.id)}>
+                              <Button className="bg-red-500 hover:bg-red-600 transition" type="submit">
+                                O'chirish
+                              </Button>
+                            </form>
+                          </div>
                         </DialogComponent>
                       </div>
                     ) : (

@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { TeachersValidation } from "@/lib/validations";
@@ -17,14 +17,6 @@ const TeachersForm = () => {
 
   const form = useForm<z.infer<typeof TeachersValidation>>({
     resolver: zodResolver(TeachersValidation),
-    defaultValues: {
-      first_name: "",
-      phone_number: "",
-      subject_id: "",
-      age: "",
-      img: "",
-      last_name: "",
-    },
   });
 
   const postTeacher = async (data: ITeacher) => {
@@ -39,6 +31,7 @@ const TeachersForm = () => {
     const formData = new FormData();
     for (const key in values) {
       formData.append(key, values[key]);
+      console.log(key, values[key]);
     }
     postTeacher(formData);
   }
@@ -76,7 +69,7 @@ const TeachersForm = () => {
           render={({ field }) => (
             <FormItem className="w-[320px] focus-visible:ring-[#2F49D199]">
               <FormLabel className="text-xl tracking-wide font-semibold">Yo’nalish</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger className="focus-visible:ring-[#2F49D199]">
                     <SelectValue placeholder="Yo’nalish ..." />
@@ -125,7 +118,6 @@ const TeachersForm = () => {
                   {...fieldProps}
                 />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />

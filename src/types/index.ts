@@ -89,3 +89,10 @@ export type IUpdateStudent = {
   last_name: string;
   age: number;
 };
+
+export type IUpdateTeacher = {
+  id?: number;
+  first_name: string;
+  age: number;
+  img?: unknown;
+};

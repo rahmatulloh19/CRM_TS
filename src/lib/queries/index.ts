@@ -45,6 +45,21 @@ export const api = createApi({
       }),
       invalidatesTags: ["Teacher"],
     }),
+    editTeacher: builder.mutation({
+      query: ({ id, ...builder }) => ({
+        url: `/teacher/update/${id}`,
+        method: "PUT",
+        body: builder,
+      }),
+      invalidatesTags: ["Teacher", "Group"],
+    }),
+    removeTeacher: builder.mutation({
+      query: (id) => ({
+        url: `/teacher/delete/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Teacher", "Group"],
+    }),
     getStudents: builder.query({
       query: () => `/all-student`,
       providesTags: (result) => (result ? [...result.data.map(({ id }: { id: number }) => ({ type: "Student" as const, id })), "Student"] : ["Student"]),
@@ -70,7 +85,7 @@ export const api = createApi({
         method: "PUT",
         body,
       }),
-      invalidatesTags: ["Student"],
+      invalidatesTags: ["Teacher"],
     }),
     getWeekDays: builder.query({
       query: () => `/all-week`,
@@ -84,6 +99,8 @@ export const {
   useAddGroupMutation,
   useGetGroupsQuery,
   useAddTeachersMutation,
+  useEditTeacherMutation,
+  useRemoveTeacherMutation,
   useGetTeachersQuery,
   useAddStudentMutation,
   useRemoveStudentMutation,
