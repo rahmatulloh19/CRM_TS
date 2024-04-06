@@ -49,10 +49,25 @@ export const api = createApi({
       query: () => `/all-student`,
       providesTags: (result) => (result ? [...result.data.map(({ id }: { id: number }) => ({ type: "Student" as const, id })), "Student"] : ["Student"]),
     }),
-    addStudents: builder.mutation({
+    addStudent: builder.mutation({
       query: (body) => ({
         url: "/student/create",
         method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Student"],
+    }),
+    removeStudent: builder.mutation({
+      query: (id) => ({
+        url: `/student/delete/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Student"],
+    }),
+    editStudent: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/student/update/${id}`,
+        method: "PUT",
         body,
       }),
       invalidatesTags: ["Student"],
@@ -70,7 +85,9 @@ export const {
   useGetGroupsQuery,
   useAddTeachersMutation,
   useGetTeachersQuery,
-  useAddStudentsMutation,
+  useAddStudentMutation,
+  useRemoveStudentMutation,
+  useEditStudentMutation,
   useGetStudentsQuery,
   useGetWeekDaysQuery,
 } = api;

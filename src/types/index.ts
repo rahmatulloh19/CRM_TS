@@ -11,6 +11,7 @@ export type IStudentTable = {
   direction: string;
   parent_full_name: string;
   parent_number: string;
+  age?: string | "";
 };
 
 export type ITeacherTable = {
@@ -79,4 +80,12 @@ export type IStudent = {
   groups?: {
     group_name: string;
   };
+};
+
+export type IUpdateStudent = {
+  id?: number;
+  first_name: string;
+  phone_number: number;
+  last_name: string;
+  age: number;
 };

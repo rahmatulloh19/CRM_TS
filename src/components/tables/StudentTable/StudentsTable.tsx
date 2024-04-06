@@ -1,18 +1,24 @@
-import { useEffect, useState } from "react";
-import MOCKDATA from "./MOCK_DATA (1).json";
+import { FormEvent, useEffect, useState } from "react";
 import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, PaginationState, getFilteredRowModel } from "@tanstack/react-table";
 import { studentsColumns as columns } from "./columns";
-import { IStudent, IStudentTable } from "@/types";
+import { IStudent, IStudentTable, IUpdateStudent } from "@/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from "@/components/ui/pagination";
 import DialogComponent from "@/components/shared/DialogComponent";
 import { Input } from "@/components/ui/input";
-import { useGetStudentsQuery } from "@/lib/queries";
+import { useEditStudentMutation, useGetStudentsQuery, useRemoveStudentMutation } from "@/lib/queries";
+import { Button } from "@/components/ui/button";
+import { DialogClose } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { StudentsUpdateValidation } from "@/lib/validations";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const StudentsTable = () => {
   const { data: students, isLoading } = useGetStudentsQuery(undefined);
 
-  const [data, setData] = useState<IStudentTable[]>(() => [...MOCKDATA]);
+  const [data, setData] = useState<IStudentTable[]>(() => []);
   const [globalFilter, setGlobalFilter] = useState("");
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -34,7 +40,32 @@ const StudentsTable = () => {
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  console.log(students);
+  const [editStudent, result] = useEditStudentMutation();
+
+  const updateStudent = async (student: IUpdateStudent) => {
+    try {
+      await editStudent(student).unwrap();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const form = useForm<z.infer<typeof StudentsUpdateValidation>>({
+    resolver: zodResolver(StudentsUpdateValidation),
+    mode: "all",
+  });
+
+  function onSubmit(values: z.infer<typeof StudentsUpdateValidation>) {
+    updateStudent(values);
+    console.log(result);
+  }
+
+  const [deleteStudent] = useRemoveStudentMutation();
+
+  const handleDeleteStudent = async (evt: FormEvent, id: number) => {
+    evt.preventDefault();
+    await deleteStudent(id);
+  };
 
   useEffect(() => {
     students?.data
@@ -46,6 +77,7 @@ const StudentsTable = () => {
             direction: student.groups?.group_name,
             parent_full_name: student.parent_name,
             parent_number: student.parent_phone_number,
+            age: student.age,
           }))
         )
       : "";
@@ -91,12 +123,98 @@ const StudentsTable = () => {
                       <div className="flex gap-5">
                         <DialogComponent
                           trigger={
-                            <button type="button">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                form.setValue("first_name", row.original.full_name.split(" ").slice(0, 1).join());
+                                form.setValue("last_name", row.original.full_name.split(" ").slice(1, 2).join());
+                                form.setValue("phone_number", +row.original.number);
+                                form.setValue("age", row.original.age ? +row.original.age : 0);
+                                form.setValue("id", +row.original.id);
+                              }}
+                            >
                               <img src="/assets/icons/edit.svg" width={20} height={20} alt="Pen's icon" />
                             </button>
                           }
                         >
-                          <h1>Hi I'm Dialog</h1>
+                          <div>
+                            <h4 className="my-4 text-2xl font-bold text-orange-600">Tahrirlash</h4>
+                            <p className="text-neutral-500 mb-6">
+                              <strong className="text-black font-semibold">{row.original.full_name}</strong> o'quvchi ma'lumotlari
+                            </p>
+                            <Form {...form}>
+                              <form onSubmit={form.handleSubmit((values) => onSubmit(values))} className="flex flex-wrap gap-8 justify-between items-end content-end">
+                                <FormField
+                                  control={form.control}
+                                  name="first_name"
+                                  render={({ field }) => (
+                                    <FormItem className="w-[320px]">
+                                      <FormLabel className="text-lg tracking-wide font-semibold">O’quvchi ismi</FormLabel>
+                                      <FormControl>
+                                        <Input className="focus-visible:ring-[#2F49D199]" type="text" placeholder="O’quvchi ismi ..." {...field} />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="phone_number"
+                                  render={({ field }) => (
+                                    <FormItem className="w-[320px]">
+                                      <FormLabel className="text-lg tracking-wide font-semibold">Telefon raqam</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          type="number"
+                                          className="focus-visible:ring-[#2F49D199]"
+                                          placeholder="Telefon raqam ..."
+                                          {...field}
+                                          onChange={(evt) => {
+                                            field.onChange(evt.target.value ? +evt.target.value : "");
+                                          }}
+                                        />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="last_name"
+                                  render={({ field }) => (
+                                    <FormItem className="w-[320px]">
+                                      <FormLabel className="text-lg tracking-wide font-semibold">O’quvchi familyasi</FormLabel>
+                                      <FormControl>
+                                        <Input className="focus-visible:ring-[#2F49D199]" placeholder="Ota-onasi ismi ..." {...field} />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+
+                                <FormField
+                                  control={form.control}
+                                  name="age"
+                                  render={({ field }) => (
+                                    <FormItem className="w-[320px]">
+                                      <FormLabel className="text-lg tracking-wide font-semibold">O’quvchi yoshi</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          type="number"
+                                          className="focus-visible:ring-[#2F49D199]"
+                                          placeholder="O’quvchi yoshi ..."
+                                          {...field}
+                                          onChange={(evt) => {
+                                            field.onChange(evt.target.value ? +evt.target.value : "");
+                                          }}
+                                        />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                                <Button className="bg-orange-600 ml-auto hover:bg-orange-700 transition" type="submit" disabled={Boolean(Object.keys(form.formState.errors).length)}>
+                                  Tahrirlash
+                                </Button>
+                              </form>
+                            </Form>
+                          </div>
                         </DialogComponent>
 
                         <DialogComponent
@@ -106,7 +224,19 @@ const StudentsTable = () => {
                             </button>
                           }
                         >
-                          <h1>Hi I'm Delete Dialog</h1>
+                          <div>
+                            <h4 className="mt-4 mb-8 text-xl font-bold text-red-600">O'chirish</h4>
+                            <p className="text-neutral-500">
+                              <strong className="text-black font-semibold">{row.original.full_name}</strong> o'quvchilar ro'yxatidan o'chirishni istaysizmi ?
+                            </p>
+                            <form className="flex justify-end" onSubmit={(evt) => handleDeleteStudent(evt, row.original.id)}>
+                              <DialogClose asChild>
+                                <Button className="bg-red-500 hover:bg-red-600 transition" type="submit">
+                                  O'chirish
+                                </Button>
+                              </DialogClose>
+                            </form>
+                          </div>
                         </DialogComponent>
                       </div>
                     ) : (

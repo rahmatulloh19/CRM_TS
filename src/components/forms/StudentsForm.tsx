@@ -6,13 +6,13 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { StudentsValidation } from "@/lib/validations";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useAddStudentsMutation, useGetGroupsQuery } from "@/lib/queries";
+import { useAddStudentMutation, useGetGroupsQuery } from "@/lib/queries";
 import { IStudent } from "@/types";
 
 const StudentsForm = () => {
   const { data: groups, isLoading } = useGetGroupsQuery(undefined);
 
-  const [addStudent] = useAddStudentsMutation();
+  const [addStudent] = useAddStudentMutation();
 
   const postStudent = async (student: IStudent) => {
     try {

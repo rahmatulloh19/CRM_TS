@@ -21,6 +21,14 @@ export const StudentsValidation = z.object({
     }),
 });
 
+export const StudentsUpdateValidation = z.object({
+  id: z.number().min(1),
+  first_name: z.string().min(1).max(50).trim(),
+  last_name: z.string().min(1).max(50).trim(),
+  age: z.number().min(1) || z.string().min(1),
+  phone_number: z.number().min(1),
+});
+
 export const GroupsValidation = z.object({
   group_name: z.string().min(2).max(50).trim(),
   group_time_start: z.string().min(1),
