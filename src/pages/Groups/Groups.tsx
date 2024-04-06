@@ -1,7 +1,11 @@
 import GroupsForm from "@/components/forms/GroupsForm";
 import { Caption, CardGroup } from "@/components/shared";
+import { useGetGroupsQuery } from "@/lib/queries";
+import { IGroup } from "@/types";
 
 const Groups = () => {
+  const { data: groups, isLoading } = useGetGroupsQuery(undefined);
+
   return (
     <div>
       <Caption>Guruhlar</Caption>
@@ -10,11 +14,7 @@ const Groups = () => {
       </div>
       <div className="px-20">
         <h3 className="text-[#0061F7] font-bold text-4xl leading-[44px] mb-[34px]">Mavjud guruhlar</h3>
-        <ul className="grid grid-cols-3 gap-8 mb-8">
-          <CardGroup />
-          <CardGroup />
-          <CardGroup />
-        </ul>
+        <ul className="grid grid-cols-3 gap-8 mb-8">{isLoading ? <li className="text-center">Loading...</li> : groups.data.map((group: IGroup) => <CardGroup key={group.id} group={group} />)}</ul>
       </div>
     </div>
   );

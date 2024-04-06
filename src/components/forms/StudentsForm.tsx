@@ -6,23 +6,37 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { StudentsValidation } from "@/lib/validations";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAddStudentsMutation, useGetGroupsQuery } from "@/lib/queries";
+import { IStudent } from "@/types";
 
 const StudentsForm = () => {
+  const { data: groups, isLoading } = useGetGroupsQuery(undefined);
+
+  const [addStudent] = useAddStudentsMutation();
+
+  const postStudent = async (student: IStudent) => {
+    try {
+      await addStudent(student).unwrap();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const form = useForm<z.infer<typeof StudentsValidation>>({
     resolver: zodResolver(StudentsValidation),
     defaultValues: {
-      first_name_student: "",
-      number: "",
-      last_name_student: "",
-      parent_name_student: "",
-      parent_number_student: "",
-      group: "",
-      age_student: "",
+      first_name: "",
+      phone_number: "",
+      last_name: "",
+      parent_name: "",
+      parent_phone_number: "",
+      group_id: "",
+      age: "",
     },
   });
 
   function onSubmit(values: z.infer<typeof StudentsValidation>) {
-    console.log(values);
+    postStudent(values);
   }
   return (
     <Form {...form}>
@@ -30,7 +44,7 @@ const StudentsForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-wrap gap-8 justify-between items-end content-end">
         <FormField
           control={form.control}
-          name="first_name_student"
+          name="first_name"
           render={({ field }) => (
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">O’quvchi ismi</FormLabel>
@@ -42,7 +56,7 @@ const StudentsForm = () => {
         />
         <FormField
           control={form.control}
-          name="number"
+          name="phone_number"
           render={({ field }) => (
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">Telefon raqam</FormLabel>
@@ -54,7 +68,7 @@ const StudentsForm = () => {
         />
         <FormField
           control={form.control}
-          name="last_name_student"
+          name="last_name"
           render={({ field }) => (
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">O’quvchi familyasi</FormLabel>
@@ -66,7 +80,7 @@ const StudentsForm = () => {
         />
         <FormField
           control={form.control}
-          name="parent_name_student"
+          name="parent_name"
           render={({ field }) => (
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">Ota-onasi ismi</FormLabel>
@@ -78,7 +92,7 @@ const StudentsForm = () => {
         />
         <FormField
           control={form.control}
-          name="parent_number_student"
+          name="parent_phone_number"
           render={({ field }) => (
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">Ota onasi nomeri</FormLabel>
@@ -90,7 +104,7 @@ const StudentsForm = () => {
         />
         <FormField
           control={form.control}
-          name="group"
+          name="group_id"
           render={({ field }) => (
             <FormItem className="w-[320px] focus-visible:ring-[#2F49D199]">
               <FormLabel className="text-xl tracking-wide font-semibold">Guruh</FormLabel>
@@ -101,9 +115,17 @@ const StudentsForm = () => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
+                  {isLoading ? (
+                    <SelectItem unselectable="on" value="Loading value">
+                      Loading...
+                    </SelectItem>
+                  ) : (
+                    groups?.data?.map((group: { id: number; group_name: string }) => (
+                      <SelectItem key={group.id} value={`${group.id}`}>
+                        {group.group_name}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </FormItem>
@@ -111,7 +133,7 @@ const StudentsForm = () => {
         />
         <FormField
           control={form.control}
-          name="age_student"
+          name="age"
           render={({ field }) => (
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">O’quvchi yoshi</FormLabel>

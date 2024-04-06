@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MOCKDATA from "./MOCK_DATA (1).json";
 import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, PaginationState, getFilteredRowModel } from "@tanstack/react-table";
 import { studentsColumns as columns } from "./columns";
-import { IStudentTable } from "@/types";
+import { IStudent, IStudentTable } from "@/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from "@/components/ui/pagination";
 import DialogComponent from "@/components/shared/DialogComponent";
 import { Input } from "@/components/ui/input";
+import { useGetStudentsQuery } from "@/lib/queries";
 
 const StudentsTable = () => {
+  const { data: students, isLoading } = useGetStudentsQuery(undefined);
+
   const [data, setData] = useState<IStudentTable[]>(() => [...MOCKDATA]);
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -31,7 +34,22 @@ const StudentsTable = () => {
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  setData;
+  console.log(students);
+
+  useEffect(() => {
+    students?.data
+      ? setData(
+          students.data.map((student: IStudent) => ({
+            id: student.id,
+            full_name: `${student.first_name} ${student.last_name}`,
+            number: student.phone_number,
+            direction: student.groups?.group_name,
+            parent_full_name: student.parent_name,
+            parent_number: student.parent_phone_number,
+          }))
+        )
+      : "";
+  }, [students]);
 
   return (
     <div className="mt-12 mb-16 px-11">
@@ -56,42 +74,50 @@ const StudentsTable = () => {
             </TableRow>
           ))}
         </TableHeader>
-        <TableBody className="block max-h-[500px] overflow-y-scroll scrollbar scrollbar-thumb-[#323232] scrollbar-track-[#C4C4C4]">
-          {table.getRowModel().rows.map((row) => (
-            <TableRow className="student-table even:hover:bg-[#001daf08] odd:hover:bg-[#001daf3b] odd:bg-[#001CAF1A]" key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell className={`${cell.id.includes("parent_number") ? "flex justify-between" : ""}`} key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  {cell.id.includes("parent_number") ? (
-                    <div className="flex gap-5">
-                      <DialogComponent
-                        trigger={
-                          <button type="button">
-                            <img src="/assets/icons/edit.svg" width={20} height={20} alt="Pen's icon" />
-                          </button>
-                        }
-                      >
-                        <h1>Hi I'm Dialog</h1>
-                      </DialogComponent>
+        {isLoading ? (
+          <tbody className="flex justify-content-center">
+            <tr className="flex justify-center">
+              <td className="text-center flex justify-center">Loading...</td>
+            </tr>
+          </tbody>
+        ) : (
+          <TableBody className="block max-h-[500px] overflow-y-scroll scrollbar scrollbar-thumb-[#323232] scrollbar-track-[#C4C4C4]">
+            {table.getRowModel().rows.map((row) => (
+              <TableRow className="student-table even:hover:bg-[#001daf08] odd:hover:bg-[#001daf3b] odd:bg-[#001CAF1A]" key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell className={`${cell.id.includes("parent_number") ? "flex justify-between" : ""}`} key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {cell.id.includes("parent_number") ? (
+                      <div className="flex gap-5">
+                        <DialogComponent
+                          trigger={
+                            <button type="button">
+                              <img src="/assets/icons/edit.svg" width={20} height={20} alt="Pen's icon" />
+                            </button>
+                          }
+                        >
+                          <h1>Hi I'm Dialog</h1>
+                        </DialogComponent>
 
-                      <DialogComponent
-                        trigger={
-                          <button type="button">
-                            <img src="/assets/icons/garbage.svg" width={20} height={20} alt="Pen's icon" />
-                          </button>
-                        }
-                      >
-                        <h1>Hi I'm Delete Dialog</h1>
-                      </DialogComponent>
-                    </div>
-                  ) : (
-                    ""
-                  )}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
+                        <DialogComponent
+                          trigger={
+                            <button type="button">
+                              <img src="/assets/icons/garbage.svg" width={20} height={20} alt="Pen's icon" />
+                            </button>
+                          }
+                        >
+                          <h1>Hi I'm Delete Dialog</h1>
+                        </DialogComponent>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        )}
       </Table>
 
       {/* Pagination */}

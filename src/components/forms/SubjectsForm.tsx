@@ -28,7 +28,6 @@ const SubjectsForm = () => {
 
   async function onSubmit(values: z.infer<typeof SubjectValidation>) {
     postSubject(values);
-    console.log(result.isLoading);
   }
   return (
     <Form {...form}>

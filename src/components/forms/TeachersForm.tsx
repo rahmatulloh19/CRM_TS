@@ -7,22 +7,40 @@ import { z } from "zod";
 import { TeachersValidation } from "@/lib/validations";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChangeEvent } from "react";
+import { useAddTeachersMutation, useGetSubjectsQuery } from "@/lib/queries";
+import { ISubject, ITeacher } from "@/types";
 
 const TeachersForm = () => {
+  const { data } = useGetSubjectsQuery(undefined);
+
+  const [addTeacher] = useAddTeachersMutation();
+
   const form = useForm<z.infer<typeof TeachersValidation>>({
     resolver: zodResolver(TeachersValidation),
     defaultValues: {
-      first_name_teacher: "",
-      number: "",
-      direction: "",
+      first_name: "",
+      phone_number: "",
+      subject_id: "",
       age: "",
-      image: "",
-      last_name_teacher: "",
+      img: "",
+      last_name: "",
     },
   });
 
+  const postTeacher = async (data: ITeacher) => {
+    try {
+      await addTeacher(data).unwrap();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   function onSubmit(values: z.infer<typeof TeachersValidation>) {
-    console.log(values);
+    const formData = new FormData();
+    for (const key in values) {
+      formData.append(key, values[key]);
+    }
+    postTeacher(formData);
   }
   return (
     <Form {...form}>
@@ -30,7 +48,7 @@ const TeachersForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-wrap gap-8 justify-between items-end content-end">
         <FormField
           control={form.control}
-          name="first_name_teacher"
+          name="first_name"
           render={({ field }) => (
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">O’qtuvchi ismi</FormLabel>
@@ -42,7 +60,7 @@ const TeachersForm = () => {
         />
         <FormField
           control={form.control}
-          name="number"
+          name="phone_number"
           render={({ field }) => (
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">Telefon raqam</FormLabel>
@@ -54,7 +72,7 @@ const TeachersForm = () => {
         />
         <FormField
           control={form.control}
-          name="direction"
+          name="subject_id"
           render={({ field }) => (
             <FormItem className="w-[320px] focus-visible:ring-[#2F49D199]">
               <FormLabel className="text-xl tracking-wide font-semibold">Yo’nalish</FormLabel>
@@ -65,9 +83,11 @@ const TeachersForm = () => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
+                  {data?.data.map((subject: ISubject) => (
+                    <SelectItem key={subject.id} value={`${subject.id}`}>
+                      {subject.subject_name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </FormItem>
@@ -87,7 +107,7 @@ const TeachersForm = () => {
         />
         <FormField
           control={form.control}
-          name="image"
+          name="img"
           render={({ field: { value, onChange, ...fieldProps } }) => (
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">Rasm 3x4</FormLabel>
@@ -111,7 +131,7 @@ const TeachersForm = () => {
         />
         <FormField
           control={form.control}
-          name="last_name_teacher"
+          name="last_name"
           render={({ field }) => (
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">O’qtuvchi familiyasi</FormLabel>

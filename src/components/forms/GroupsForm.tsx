@@ -6,22 +6,39 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { GroupsValidation } from "@/lib/validations";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAddGroupMutation, useGetSubjectsQuery, useGetTeachersQuery, useGetWeekDaysQuery } from "@/lib/queries";
+import { IGroup } from "@/types";
 
 const GroupsForm = () => {
+  const [addGroup, result] = useAddGroupMutation();
+  result;
+
+  const { data: subjects } = useGetSubjectsQuery(undefined);
+  const { data: teachers } = useGetTeachersQuery(undefined);
+  const { data: weekDays } = useGetWeekDaysQuery(undefined);
+
   const form = useForm<z.infer<typeof GroupsValidation>>({
     resolver: zodResolver(GroupsValidation),
     defaultValues: {
-      type_group: "",
-      day_lessons: "",
-      starting_time: "",
-      teacher: "",
-      finishing_time: "",
-      name_group: "",
+      group_name: "",
+      group_time_start: "",
+      group_time_stop: "",
+      subject_id: "",
+      week_id: "",
+      teacher_id: "",
     },
   });
 
+  const postGroup = async (value: IGroup) => {
+    try {
+      await addGroup(value).unwrap();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   function onSubmit(values: z.infer<typeof GroupsValidation>) {
-    console.log(values);
+    postGroup(values);
   }
   return (
     <Form {...form}>
@@ -29,7 +46,7 @@ const GroupsForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-wrap gap-8 justify-between items-end content-end">
         <FormField
           control={form.control}
-          name="type_group"
+          name="subject_id"
           render={({ field }) => (
             <FormItem className="w-[320px] focus-visible:ring-[#2F49D199]">
               <FormLabel className="text-xl tracking-wide font-semibold">Guruh yo’nalishi</FormLabel>
@@ -40,9 +57,13 @@ const GroupsForm = () => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
+                  {subjects?.data
+                    ? subjects?.data?.map((subject: { id: number; subject_name: string }) => (
+                        <SelectItem key={subject.id} value={`${subject.id}`}>
+                          {subject.subject_name}
+                        </SelectItem>
+                      ))
+                    : ""}
                 </SelectContent>
               </Select>
             </FormItem>
@@ -50,7 +71,7 @@ const GroupsForm = () => {
         />
         <FormField
           control={form.control}
-          name="day_lessons"
+          name="week_id"
           render={({ field }) => (
             <FormItem className="w-[320px] focus-visible:ring-[#2F49D199]">
               <FormLabel className="text-xl tracking-wide font-semibold">Dars kunlari</FormLabel>
@@ -61,9 +82,13 @@ const GroupsForm = () => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
+                  {weekDays?.data
+                    ? weekDays?.data?.map((days: { id: number; week_name: string }) => (
+                        <SelectItem key={days.id} value={`${days.id}`}>
+                          {days.week_name}
+                        </SelectItem>
+                      ))
+                    : ""}
                 </SelectContent>
               </Select>
             </FormItem>
@@ -71,7 +96,7 @@ const GroupsForm = () => {
         />
         <FormField
           control={form.control}
-          name="starting_time"
+          name="group_time_start"
           render={({ field }) => (
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">Dars boshlanishi vaqti</FormLabel>
@@ -83,19 +108,32 @@ const GroupsForm = () => {
         />
         <FormField
           control={form.control}
-          name="teacher"
+          name="teacher_id"
           render={({ field }) => (
-            <FormItem className="w-[320px]">
-              <FormLabel className="text-xl tracking-wide font-semibold">O’qituvchi</FormLabel>
-              <FormControl>
-                <Input className="focus-visible:ring-[#2F49D199]" placeholder="O’qituvchi ..." {...field} />
-              </FormControl>
+            <FormItem className="w-[320px] focus-visible:ring-[#2F49D199]">
+              <FormLabel className="text-xl tracking-wide font-semibold ">O’qituvchi</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="focus-visible:ring-[#2F49D199]">
+                    <SelectValue placeholder="O’qituvchi ..." />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {teachers?.data
+                    ? teachers?.data?.map((teacher: { id: number; first_name: string; last_name: string }) => (
+                        <SelectItem key={teacher.id} value={`${teacher.id}`}>
+                          {`${teacher.first_name} ${teacher.last_name}`}
+                        </SelectItem>
+                      ))
+                    : ""}
+                </SelectContent>
+              </Select>
             </FormItem>
           )}
         />
         <FormField
           control={form.control}
-          name="finishing_time"
+          name="group_time_stop"
           render={({ field }) => (
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">Dars tugash vaqti</FormLabel>
@@ -107,7 +145,7 @@ const GroupsForm = () => {
         />
         <FormField
           control={form.control}
-          name="name_group"
+          name="group_name"
           render={({ field }) => (
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">Guruh nomi</FormLabel>
