@@ -38,6 +38,13 @@ export const GroupsValidation = z.object({
   teacher_id: z.string().min(1).trim(),
 });
 
+export const GroupsUpdateValidation = z.object({
+  id: z.string(),
+  group_name: z.string().min(1).max(25),
+  group_time_start: z.string().min(1),
+  group_time_stop: z.string().min(1),
+});
+
 export const TeachersValidation = z.object({
   first_name: z.string().min(2).max(50).trim(),
   phone_number: z.number().min(1),

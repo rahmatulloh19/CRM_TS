@@ -82,6 +82,13 @@ export type IStudent = {
   };
 };
 
+export type IUpdateGroup = {
+  id: string;
+  group_name: string;
+  group_time_start: string;
+  group_time_stop: string;
+};
+
 export type IUpdateStudent = {
   id?: number;
   first_name: string;

@@ -47,8 +47,8 @@ const TeachersTable = () => {
     mode: "all",
   });
 
-  const [editTeacher] = useEditTeacherMutation();
-  const [removeTeacher] = useRemoveTeacherMutation();
+  const [editTeacher, ruselteditTeacher] = useEditTeacherMutation();
+  const [removeTeacher, ruseltremoveTeacher] = useRemoveTeacherMutation();
 
   const updateTeacher = async (values: IUpdateTeacher) => {
     try {
@@ -90,6 +90,7 @@ const TeachersTable = () => {
   const handleDeleteStudent = async (evt: FormEvent, id: number) => {
     evt.preventDefault();
     deleteTeacher(id);
+    console.log(ruseltremoveTeacher);
   };
 
   useEffect(() => {
@@ -99,7 +100,7 @@ const TeachersTable = () => {
             id: data.id,
             full_name: `${data.first_name} ${data.last_name}`,
             number: data.phone_number,
-            direction: data.subjects.subject_name,
+            direction: data.subjects?.subject_name,
             age: data.age,
           }))
         )

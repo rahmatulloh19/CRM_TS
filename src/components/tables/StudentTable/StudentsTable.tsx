@@ -254,7 +254,7 @@ const StudentsTable = () => {
                             </p>
                             <form className="flex justify-end" onSubmit={(evt) => handleDeleteStudent(evt, row.original.id)}>
                               <DialogClose asChild>
-                                <Button className="bg-red-500 hover:bg-red-600 transition" type="submit">
+                                <Button className="bg-red-500 hover:bg-red-600 transition mt-4" type="submit">
                                   O'chirish
                                 </Button>
                               </DialogClose>
