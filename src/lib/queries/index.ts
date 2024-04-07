@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const BASE_URL = "http://localhost:9090";
+export const BASE_URL = "https://ts-backend-j45p.onrender.com";
 
 export const api = createApi({
   reducerPath: "api",
@@ -19,7 +19,7 @@ export const api = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Subject"],
+      invalidatesTags: ["Subject", "Student", "Teacher", "Group"],
     }),
     editSubject: builder.mutation({
       query: ({ id, ...body }) => ({

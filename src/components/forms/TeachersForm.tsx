@@ -10,15 +10,23 @@ import { ChangeEvent } from "react";
 import { useAddTeachersMutation, useGetSubjectsQuery } from "@/lib/queries";
 import { ISubject, ITeacher } from "@/types";
 import { useToast } from "../ui/use-toast";
+import Loader from "../shared/Loader";
 
 const TeachersForm = () => {
   const { toast } = useToast();
-  const { data } = useGetSubjectsQuery(undefined);
+  const { data: subjects, isLoading: isSubjectLoading } = useGetSubjectsQuery(undefined);
 
   const [addTeacher] = useAddTeachersMutation();
 
   const form = useForm<z.infer<typeof TeachersValidation>>({
     resolver: zodResolver(TeachersValidation),
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      age: "",
+      phone_number: "",
+      subject_id: "",
+    },
   });
 
   const postTeacher = async (data: ITeacher) => {
@@ -74,7 +82,7 @@ const TeachersForm = () => {
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">Telefon raqam</FormLabel>
               <FormControl>
-                <Input type="number" className="focus-visible:ring-[#2F49D199]" placeholder="Telefon raqam ..." {...field} onChange={(evt) => field.onChange(+evt.target.value)} />
+                <Input type="number" className="focus-visible:ring-[#2F49D199]" placeholder="Telefon raqam ..." {...field} />
               </FormControl>
             </FormItem>
           )}
@@ -85,22 +93,28 @@ const TeachersForm = () => {
           render={({ field }) => (
             <FormItem className="w-[320px] focus-visible:ring-[#2F49D199]">
               <FormLabel className="text-xl tracking-wide font-semibold">Yo’nalish</FormLabel>
-              <Select
-                onValueChange={(evt) => {
-                  field.onChange(+evt);
-                }}
-              >
-                <FormControl>
+              <Select onValueChange={field.onChange}>
+                <FormControl className="focus-visible:ring-[#2F49D199]">
                   <SelectTrigger className="focus-visible:ring-[#2F49D199]">
                     <SelectValue placeholder="Yo’nalish ..." />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {data?.data.map((subject: ISubject) => (
-                    <SelectItem key={subject.id} value={`${subject.id}`}>
-                      {subject.subject_name}
+                  {isSubjectLoading ? (
+                    <SelectItem className="flex justify-center" unselectable="on" disabled value="Loading value">
+                      <Loader />
                     </SelectItem>
-                  ))}
+                  ) : subjects?.data.length ? (
+                    subjects?.data.map((subject: ISubject) => (
+                      <SelectItem key={subject.id} value={`${subject.id}`}>
+                        {subject.subject_name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem unselectable="on" value="Loading value" disabled>
+                      Fanlar yo'q
+                    </SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </FormItem>
@@ -113,7 +127,7 @@ const TeachersForm = () => {
             <FormItem className="w-[320px]">
               <FormLabel className="text-xl tracking-wide font-semibold">Yoshi</FormLabel>
               <FormControl>
-                <Input type="number" className="focus-visible:ring-[#2F49D199]" placeholder="Yoshi ..." {...field} onChange={(evt) => field.onChange(+evt.target.value)} />
+                <Input type="number" className="focus-visible:ring-[#2F49D199]" placeholder="Yoshi ..." {...field} />
               </FormControl>
             </FormItem>
           )}

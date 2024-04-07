@@ -14,6 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { Button } from "@/components/ui/button";
 import { TeacherUpdateValidation } from "@/lib/validations";
 import { useToast } from "@/components/ui/use-toast";
+import Loader from "@/components/shared/Loader";
 
 const TeachersTable = () => {
   const { toast } = useToast();
@@ -47,8 +48,8 @@ const TeachersTable = () => {
     mode: "all",
   });
 
-  const [editTeacher, ruselteditTeacher] = useEditTeacherMutation();
-  const [removeTeacher, ruseltremoveTeacher] = useRemoveTeacherMutation();
+  const [editTeacher] = useEditTeacherMutation();
+  const [removeTeacher] = useRemoveTeacherMutation();
 
   const updateTeacher = async (values: IUpdateTeacher) => {
     try {
@@ -90,7 +91,6 @@ const TeachersTable = () => {
   const handleDeleteStudent = async (evt: FormEvent, id: number) => {
     evt.preventDefault();
     deleteTeacher(id);
-    console.log(ruseltremoveTeacher);
   };
 
   useEffect(() => {
@@ -130,19 +130,15 @@ const TeachersTable = () => {
             </TableRow>
           ))}
         </TableHeader>
-        {isLoading ? (
-          <tbody>
-            <tr>
-              <td colSpan={100} className="text-center">
-                <div className="spinner-border" role="status">
-                  <span className="sr-only">Loading...</span>
-                </div>
+        <TableBody className="block max-h-[500px] overflow-y-scroll scrollbar scrollbar-thumb-[#323232] scrollbar-track-[#C4C4C4]">
+          {isLoading ? (
+            <tr className="block">
+              <td className="flex justify-center text-center">
+                <Loader className="mx-auto" width={40} height={40} />
               </td>
             </tr>
-          </tbody>
-        ) : (
-          <TableBody className="block max-h-[500px] overflow-y-scroll scrollbar scrollbar-thumb-[#323232] scrollbar-track-[#C4C4C4]">
-            {table.getRowModel().rows.map((row) => (
+          ) : table.getRowModel().rows.length ? (
+            table.getRowModel().rows.map((row) => (
               <TableRow className="teachers-table even:hover:bg-[#001daf08] odd:hover:bg-[#001daf3b] odd:bg-[#001CAF1A]" key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell className={`${cell.id.includes("age") ? "flex justify-between" : ""}`} key={cell.id}>
@@ -259,9 +255,13 @@ const TeachersTable = () => {
                   </TableCell>
                 ))}
               </TableRow>
-            ))}
-          </TableBody>
-        )}
+            ))
+          ) : (
+            <TableRow className="flex justify-center">
+              <td className="block w-full text-center text-lg mt-4">O'quvchi yo'q</td>
+            </TableRow>
+          )}
+        </TableBody>
       </Table>
 
       {/* Pagination */}

@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAddGroupMutation, useGetSubjectsQuery, useGetTeachersQuery, useGetWeekDaysQuery } from "@/lib/queries";
 import { IGroup } from "@/types";
 import { useToast } from "../ui/use-toast";
+import Loader from "../shared/Loader";
 
 const GroupsForm = () => {
   const { toast } = useToast();
@@ -16,9 +17,9 @@ const GroupsForm = () => {
   const [addGroup, result] = useAddGroupMutation();
   result;
 
-  const { data: subjects } = useGetSubjectsQuery(undefined);
-  const { data: teachers } = useGetTeachersQuery(undefined);
-  const { data: weekDays } = useGetWeekDaysQuery(undefined);
+  const { data: subjects, isLoading: isSubjectsLoading } = useGetSubjectsQuery(undefined);
+  const { data: teachers, isLoading: isTeachersLoading } = useGetTeachersQuery(undefined);
+  const { data: weekDays, isLoading: isWeekDaysLoading } = useGetWeekDaysQuery(undefined);
 
   const form = useForm<z.infer<typeof GroupsValidation>>({
     resolver: zodResolver(GroupsValidation),
@@ -70,13 +71,21 @@ const GroupsForm = () => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {subjects?.data
-                    ? subjects?.data?.map((subject: { id: number; subject_name: string }) => (
-                        <SelectItem key={subject.id} value={`${subject.id}`}>
-                          {subject.subject_name}
-                        </SelectItem>
-                      ))
-                    : ""}
+                  {isSubjectsLoading ? (
+                    <SelectItem className="flex justify-center" unselectable="on" value="Loading value" disabled>
+                      <Loader />
+                    </SelectItem>
+                  ) : subjects?.data?.length ? (
+                    subjects?.data?.map((subject: { id: number; subject_name: string }) => (
+                      <SelectItem key={subject.id} value={`${subject.id}`}>
+                        {subject.subject_name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem className="flex" disabled value="Loading value">
+                      Fanlar yo'q
+                    </SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </FormItem>
@@ -95,13 +104,21 @@ const GroupsForm = () => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {weekDays?.data
-                    ? weekDays?.data?.map((days: { id: number; week_name: string }) => (
-                        <SelectItem key={days.id} value={`${days.id}`}>
-                          {days.week_name}
-                        </SelectItem>
-                      ))
-                    : ""}
+                  {isWeekDaysLoading ? (
+                    <SelectItem className="flex justify-center" unselectable="on" value="Loading value" disabled>
+                      <Loader />
+                    </SelectItem>
+                  ) : weekDays?.data ? (
+                    weekDays?.data?.map((days: { id: number; week_name: string }) => (
+                      <SelectItem key={days.id} value={`${days.id}`}>
+                        {days.week_name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem className="flex" disabled value="Loading value">
+                      Hafta kunlari yo'q
+                    </SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </FormItem>
@@ -132,13 +149,21 @@ const GroupsForm = () => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {teachers?.data
-                    ? teachers?.data?.map((teacher: { id: number; first_name: string; last_name: string }) => (
-                        <SelectItem key={teacher.id} value={`${teacher.id}`}>
-                          {`${teacher.first_name} ${teacher.last_name}`}
-                        </SelectItem>
-                      ))
-                    : ""}
+                  {isTeachersLoading ? (
+                    <SelectItem className="flex justify-center" unselectable="on" value="Loading value" disabled>
+                      <Loader />
+                    </SelectItem>
+                  ) : teachers?.data.length ? (
+                    teachers?.data?.map((teacher: { id: number; first_name: string; last_name: string }) => (
+                      <SelectItem key={teacher.id} value={`${teacher.id}`}>
+                        {`${teacher.first_name} ${teacher.last_name}`}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem className="flex" disabled value="Loading value">
+                      Ustozlar yo'q
+                    </SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </FormItem>

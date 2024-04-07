@@ -9,8 +9,8 @@ const Loader: React.FC<LoaderProps> = (props) => {
       xmlnsXlink="http://www.w3.org/1999/xlink"
       viewBox="0 0 100 100"
       preserveAspectRatio="xMidYMid"
-      width={200}
-      height={200}
+      width={20}
+      height={20}
       style={{
         shapeRendering: "auto",
         display: "block",

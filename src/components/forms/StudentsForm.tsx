@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAddStudentMutation, useGetGroupsQuery } from "@/lib/queries";
 import { IStudent } from "@/types";
 import { useToast } from "../ui/use-toast";
+import Loader from "../shared/Loader";
 
 const StudentsForm = () => {
   const { toast } = useToast();
@@ -127,15 +128,19 @@ const StudentsForm = () => {
                 </FormControl>
                 <SelectContent>
                   {isLoading ? (
-                    <SelectItem unselectable="on" value="Loading value">
-                      Loading...
+                    <SelectItem className="flex justify-center" unselectable="on" value="Loading value" disabled>
+                      <Loader />
                     </SelectItem>
-                  ) : (
+                  ) : groups?.data?.length ? (
                     groups?.data?.map((group: { id: number; group_name: string }) => (
                       <SelectItem key={group.id} value={`${group.id}`}>
                         {group.group_name}
                       </SelectItem>
                     ))
+                  ) : (
+                    <SelectItem className="flex" disabled value="Loading value">
+                      Guruhlar yo'q
+                    </SelectItem>
                   )}
                 </SelectContent>
               </Select>

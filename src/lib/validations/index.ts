@@ -47,9 +47,9 @@ export const GroupsUpdateValidation = z.object({
 
 export const TeachersValidation = z.object({
   first_name: z.string().min(2).max(50).trim(),
-  phone_number: z.number().min(1),
-  subject_id: z.number().min(1),
-  age: z.number().min(8).max(28),
+  phone_number: z.string().min(1),
+  subject_id: z.string().min(1),
+  age: z.string().min(1).max(2),
   img: z.union([z.instanceof(Blob), z.null()]),
   last_name: z.string().min(2).max(50),
 });

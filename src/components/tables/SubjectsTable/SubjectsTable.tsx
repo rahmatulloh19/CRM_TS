@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useEditSubjectMutation, useGetSubjectsQuery, useRemoveSubjectMutation } from "@/lib/queries";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import Loader from "@/components/shared/Loader";
 
 const SubjectsTable = () => {
   const { toast } = useToast();
@@ -110,15 +111,15 @@ const SubjectsTable = () => {
             </TableRow>
           ))}
         </TableHeader>
-        {isLoading ? (
-          <tbody className="block">
-            <tr className="flex justify-center">
-              <td>Loading ...</td>
-            </tr>
-          </tbody>
-        ) : (
-          <TableBody className="block max-h-[500px] overflow-y-scroll scrollbar scrollbar-thumb-[#323232] scrollbar-track-[#C4C4C4]">
-            {table.getRowModel().rows.map((row) => (
+        <TableBody className="block max-h-[500px] overflow-y-scroll scrollbar scrollbar-thumb-[#323232] scrollbar-track-[#C4C4C4]">
+          {isLoading ? (
+            <TableRow className="flex justify-center">
+              <td className="block w-full">
+                <Loader className="mx-auto" width={40} height={40} />
+              </td>
+            </TableRow>
+          ) : table.getRowModel().rows.length ? (
+            table.getRowModel().rows.map((row) => (
               <TableRow className="flex even:hover:bg-[#001daf08] odd:hover:bg-[#001daf3b] odd:bg-[#001CAF1A]" key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell className="min-w-12 even:grow flex justify-between" key={cell.id}>
@@ -178,9 +179,13 @@ const SubjectsTable = () => {
                   </TableCell>
                 ))}
               </TableRow>
-            ))}
-          </TableBody>
-        )}
+            ))
+          ) : (
+            <TableRow className="flex justify-center">
+              <td className="block w-full text-center text-lg mt-4">Fanlar yo'q</td>
+            </TableRow>
+          )}
+        </TableBody>
       </Table>
       <div className="flex justify-end items-center mt-20">
         <strong>Jami: {table.getPageCount()} ta</strong>

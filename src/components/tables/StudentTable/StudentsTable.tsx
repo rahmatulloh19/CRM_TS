@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
+import Loader from "@/components/shared/Loader";
 
 const StudentsTable = () => {
   const { toast } = useToast();
@@ -129,15 +130,15 @@ const StudentsTable = () => {
             </TableRow>
           ))}
         </TableHeader>
-        {isLoading ? (
-          <tbody className="flex justify-content-center">
-            <tr className="flex justify-center">
-              <td className="text-center flex justify-center">Loading...</td>
-            </tr>
-          </tbody>
-        ) : (
-          <TableBody className="block max-h-[500px] overflow-y-scroll scrollbar scrollbar-thumb-[#323232] scrollbar-track-[#C4C4C4]">
-            {table.getRowModel().rows.map((row) => (
+        <TableBody className="block max-h-[500px] overflow-y-scroll scrollbar scrollbar-thumb-[#323232] scrollbar-track-[#C4C4C4]">
+          {isLoading ? (
+            <TableRow className="flex justify-center">
+              <td className="block w-full">
+                <Loader className="mx-auto" width={40} height={40} />
+              </td>
+            </TableRow>
+          ) : table.getRowModel().rows.length ? (
+            table.getRowModel().rows.map((row) => (
               <TableRow className="student-table even:hover:bg-[#001daf08] odd:hover:bg-[#001daf3b] odd:bg-[#001CAF1A]" key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell className={`${cell.id.includes("parent_number") ? "flex justify-between" : ""}`} key={cell.id}>
@@ -268,9 +269,13 @@ const StudentsTable = () => {
                   </TableCell>
                 ))}
               </TableRow>
-            ))}
-          </TableBody>
-        )}
+            ))
+          ) : (
+            <TableRow className="flex justify-center">
+              <td className="block w-full text-center text-lg mt-4">O'quvchilar yo'q</td>
+            </TableRow>
+          )}
+        </TableBody>
       </Table>
 
       {/* Pagination */}
