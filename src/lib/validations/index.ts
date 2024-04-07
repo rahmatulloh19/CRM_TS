@@ -50,7 +50,7 @@ export const TeachersValidation = z.object({
   phone_number: z.string().min(1),
   subject_id: z.string().min(1),
   age: z.string().min(1).max(2),
-  img: z.union([z.instanceof(Blob), z.null()]),
+  img: z.union([z.instanceof(File), z.undefined()]),
   last_name: z.string().min(2).max(50),
 });
 

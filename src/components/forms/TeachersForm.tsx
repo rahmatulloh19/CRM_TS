@@ -8,7 +8,7 @@ import { TeachersValidation } from "@/lib/validations";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChangeEvent } from "react";
 import { useAddTeachersMutation, useGetSubjectsQuery } from "@/lib/queries";
-import { ISubject, ITeacher } from "@/types";
+import { ISubject } from "@/types";
 import { useToast } from "../ui/use-toast";
 import Loader from "../shared/Loader";
 
@@ -29,7 +29,7 @@ const TeachersForm = () => {
     },
   });
 
-  const postTeacher = async (data: ITeacher) => {
+  const postTeacher = async (data: unknown) => {
     try {
       await addTeacher(data).unwrap();
       toast({
