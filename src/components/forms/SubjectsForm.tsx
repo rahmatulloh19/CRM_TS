@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { SubjectValidation } from "@/lib/validations";
 import { useAddSubjectMutation } from "@/lib/queries";
+import { useToast } from "../ui/use-toast";
 
 const SubjectsForm = () => {
-  const [addSubject, result] = useAddSubjectMutation({});
+  const { toast } = useToast();
+  const [addSubject] = useAddSubjectMutation();
 
   const form = useForm<z.infer<typeof SubjectValidation>>({
     resolver: zodResolver(SubjectValidation),
@@ -20,9 +22,17 @@ const SubjectsForm = () => {
   const postSubject = async (values: { subject_name: string }) => {
     try {
       await addSubject(values).unwrap();
-      result.reset();
+      toast({
+        title: "Muvaffaqqiyatli",
+        description: "Fan muvaffaqiyatli qo'shildi",
+      });
+      form.reset();
     } catch (error) {
-      console.log(error);
+      toast({
+        title: "Muvaffaqiyatsiz",
+        description: "Xatolik",
+        variant: "destructive",
+      });
     }
   };
 

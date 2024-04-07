@@ -14,8 +14,10 @@ import { StudentsUpdateValidation } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useToast } from "@/components/ui/use-toast";
 
 const StudentsTable = () => {
+  const { toast } = useToast();
   const { data: students, isLoading } = useGetStudentsQuery(undefined);
 
   const [data, setData] = useState<IStudentTable[]>(() => []);
@@ -45,8 +47,17 @@ const StudentsTable = () => {
   const updateStudent = async (student: IUpdateStudent) => {
     try {
       await editStudent(student).unwrap();
+      toast({
+        title: "O'quvchi yangilandi",
+        description: "O'quvchi muvaffaqiyatli yangilandi",
+      });
+      form.reset();
     } catch (error) {
-      console.log(error);
+      toast({
+        title: "Muvaffaqiyatsiz",
+        description: "Xatolik",
+        variant: "destructive",
+      });
     }
   };
 
@@ -63,7 +74,20 @@ const StudentsTable = () => {
 
   const handleDeleteStudent = async (evt: FormEvent, id: number) => {
     evt.preventDefault();
-    await deleteStudent(id);
+    await deleteStudent(id)
+      .then(() => {
+        toast({
+          title: "O'chirildi",
+          description: "O'quvchi muvaffaqiyatli o'chirildi",
+        });
+      })
+      .catch(() => {
+        toast({
+          title: "O'chirilmadi",
+          description: "Xatolik",
+          variant: "destructive",
+        });
+      });
   };
 
   useEffect(() => {

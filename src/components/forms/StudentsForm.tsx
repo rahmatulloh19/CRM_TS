@@ -8,8 +8,10 @@ import { StudentsValidation } from "@/lib/validations";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAddStudentMutation, useGetGroupsQuery } from "@/lib/queries";
 import { IStudent } from "@/types";
+import { useToast } from "../ui/use-toast";
 
 const StudentsForm = () => {
+  const { toast } = useToast();
   const { data: groups, isLoading } = useGetGroupsQuery(undefined);
 
   const [addStudent] = useAddStudentMutation();
@@ -17,8 +19,17 @@ const StudentsForm = () => {
   const postStudent = async (student: IStudent) => {
     try {
       await addStudent(student).unwrap();
+      toast({
+        title: "Muvaffaqqiyatli",
+        description: "Yangi o'quvchi qo'shildi",
+      });
+      form.reset();
     } catch (error) {
-      console.log(error);
+      toast({
+        title: "Muvaffaqiyatsiz",
+        description: "Xatolik",
+        variant: "destructive",
+      });
     }
   };
 

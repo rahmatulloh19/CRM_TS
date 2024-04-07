@@ -8,8 +8,11 @@ import { GroupsValidation } from "@/lib/validations";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAddGroupMutation, useGetSubjectsQuery, useGetTeachersQuery, useGetWeekDaysQuery } from "@/lib/queries";
 import { IGroup } from "@/types";
+import { useToast } from "../ui/use-toast";
 
 const GroupsForm = () => {
+  const { toast } = useToast();
+
   const [addGroup, result] = useAddGroupMutation();
   result;
 
@@ -32,8 +35,18 @@ const GroupsForm = () => {
   const postGroup = async (value: IGroup) => {
     try {
       await addGroup(value).unwrap();
+      toast({
+        title: "Muvaffaqqiyatli",
+        description: "Yangi guruh qo’shildi",
+        variant: "default",
+      });
+      form.reset();
     } catch (error) {
-      console.log(error);
+      toast({
+        title: "Muvaffaqiyatsiz",
+        description: "Xatolik",
+        variant: "destructive",
+      });
     }
   };
 

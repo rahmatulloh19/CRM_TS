@@ -9,8 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ChangeEvent } from "react";
 import { useAddTeachersMutation, useGetSubjectsQuery } from "@/lib/queries";
 import { ISubject, ITeacher } from "@/types";
+import { useToast } from "../ui/use-toast";
 
 const TeachersForm = () => {
+  const { toast } = useToast();
   const { data } = useGetSubjectsQuery(undefined);
 
   const [addTeacher] = useAddTeachersMutation();
@@ -22,20 +24,33 @@ const TeachersForm = () => {
   const postTeacher = async (data: ITeacher) => {
     try {
       await addTeacher(data).unwrap();
+      toast({
+        title: "Muvaffaqiyatli",
+        description: "O'qtuvchi muvaffaqiyatli qo'shildi",
+      });
+      form.reset();
     } catch (error) {
-      console.log(error);
+      toast({
+        title: "Muvaffaqiyatsiz",
+        description: "Xatolik",
+        variant: "destructive",
+      });
     }
   };
 
   function onSubmit(values: z.infer<typeof TeachersValidation>) {
     const formData = new FormData();
-    for (const key in values) {
-      formData.append(key, values[key]);
+    formData.append("first_name", String(values.first_name));
+    formData.append("phone_number", String(values.phone_number));
+    formData.append("subject_id", String(values.subject_id));
+    formData.append("age", String(values.age));
+    formData.append("last_name", String(values.last_name));
+
+    if (values.img instanceof File) {
+      formData.append("img", values.img);
     }
     postTeacher(formData);
   }
-
-  console.log(form.formState.errors);
   return (
     <Form {...form}>
       <h2 className="leading-[48px] font-semibold mb-8 text-[40px] tracking-[2px] text-[#0061F7]">Yangi o’qtuvchi qo’shish</h2>

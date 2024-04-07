@@ -1,4 +1,3 @@
-import axios from "axios";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, PaginationState, getFilteredRowModel } from "@tanstack/react-table";
 import { teachersColumn as columns } from "./columns";
@@ -7,15 +6,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from "@/components/ui/pagination";
 import DialogComponent from "@/components/shared/DialogComponent";
 import { Input } from "@/components/ui/input";
-import { BASE_URL, useEditTeacherMutation, useGetTeachersQuery, useRemoveTeacherMutation } from "@/lib/queries";
+import { useEditTeacherMutation, useGetTeachersQuery, useRemoveTeacherMutation } from "@/lib/queries";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { TeacherUpdateValidation } from "@/lib/validations";
+import { useToast } from "@/components/ui/use-toast";
 
 const TeachersTable = () => {
+  const { toast } = useToast();
+
   const { data: fetchedData, isLoading } = useGetTeachersQuery(undefined);
 
   const [globalFilter, setGlobalFilter] = useState("");
@@ -46,13 +48,22 @@ const TeachersTable = () => {
   });
 
   const [editTeacher] = useEditTeacherMutation();
-  const [removeTeacher, result] = useRemoveTeacherMutation();
+  const [removeTeacher] = useRemoveTeacherMutation();
 
   const updateTeacher = async (values: IUpdateTeacher) => {
     try {
       await editTeacher(values).unwrap();
+      toast({
+        title: "Muvaffiqqiyatli",
+        description: "Muvaffaqqiyatli o'zgartirildi",
+      });
+      form.reset();
     } catch (error) {
-      console.log(error);
+      toast({
+        title: "Muvaffaqiyatsiz",
+        description: "Xatolik",
+        variant: "destructive",
+      });
     }
   };
 
@@ -60,17 +71,25 @@ const TeachersTable = () => {
     updateTeacher(values);
   }
 
-  // const deleteTeacher = async (id: number) => {
-  //   await removeTeacher(id).unwrap();
-  // };
+  const deleteTeacher = async (id: number) => {
+    try {
+      await removeTeacher(id).unwrap();
+      toast({
+        title: "Muvaffiqqiyatli",
+        description: "Muvaffaqqiyatli o'zgartirildi",
+      });
+    } catch (error) {
+      toast({
+        title: "Muvaffaqiyatsiz",
+        description: "Xatolik",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleDeleteStudent = async (evt: FormEvent, id: number) => {
     evt.preventDefault();
-    console.log(result);
-    await removeTeacher(id);
-    axios.delete(`${BASE_URL}/delete/${id}`).then((res) => {
-      console.log(res);
-    });
+    deleteTeacher(id);
   };
 
   useEffect(() => {

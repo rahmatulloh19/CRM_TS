@@ -70,7 +70,7 @@ export const api = createApi({
     }),
     removeTeacher: builder.mutation({
       query: (id) => ({
-        url: `/teacher/delete/${id}`,
+        url: `/teacher/deaalete/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Teacher", "Group"],

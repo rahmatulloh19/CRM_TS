@@ -8,8 +8,11 @@ import DialogComponent from "@/components/shared/DialogComponent";
 import { Input } from "@/components/ui/input";
 import { useEditSubjectMutation, useGetSubjectsQuery, useRemoveSubjectMutation } from "@/lib/queries";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 const SubjectsTable = () => {
+  const { toast } = useToast();
+
   const { data: fetchedData, isLoading } = useGetSubjectsQuery(undefined);
 
   const [globalFilter, setGlobalFilter] = useState("");
@@ -36,19 +39,48 @@ const SubjectsTable = () => {
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  const [editSubject, resultEdit] = useEditSubjectMutation();
+  const [editSubject] = useEditSubjectMutation();
 
   const onSubmit = async (evt: FormEvent, id: number) => {
     evt.preventDefault();
-    editSubject({ id, subject_name: inputRef.current?.value });
-    console.log(resultEdit);
+    editSubject({ id, subject_name: inputRef.current?.value })
+      .then(() => {
+        toast({
+          title: "Muvaffaqiyatli",
+          description: "Muvaffaqiyatli tahrirlandi",
+        });
+
+        if (inputRef.current !== null && inputRef.current !== undefined) {
+          inputRef.current.value = "";
+        }
+      })
+      .catch(() => {
+        toast({
+          title: "Muvaffaqiyatsiz",
+          description: "Xatolik",
+          variant: "destructive",
+        });
+      });
   };
 
   const [removeSubject] = useRemoveSubjectMutation();
 
   const handleDelete = async (evt: FormEvent, id: number) => {
     evt.preventDefault();
-    await removeSubject(id);
+    await removeSubject(id)
+      .then(() => {
+        toast({
+          title: "Muvaffaqiyatli",
+          description: "Muvaffaqiyatli o'chirildi",
+        });
+      })
+      .catch(() => {
+        toast({
+          title: "Muvaffaqiyatsiz",
+          description: "Xatolik",
+          variant: "destructive",
+        });
+      });
   };
 
   useEffect(() => {

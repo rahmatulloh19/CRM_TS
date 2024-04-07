@@ -54,11 +54,11 @@ export type ITeacher = {
   phone_number: string;
   subject_id: string;
   age: string;
-  img?: unknown;
+  img?: File;
   last_name: string;
-  subjects: {
-    id: number;
-    subject_name: string;
+  subjects?: {
+    id?: number;
+    subject_name?: string;
   };
 };
 
