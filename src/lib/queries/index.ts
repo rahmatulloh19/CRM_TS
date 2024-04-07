@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const BASE_URL = "https://ts-backend-j45p.onrender.com/";
+export const BASE_URL = "https://ts-backend-j45p.onrender.com";
 
 export const api = createApi({
   reducerPath: "api",
